@@ -5,11 +5,8 @@
  */
 
 #include <vector>
-#include <chrono>
-#include <thread>
 #include "mcgpu/helpers/cuda_call.hpp"
 #include "device.hpp"
-
 
 __global__ void var_kernel(float *gpu_array, float mean) {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
@@ -83,7 +80,7 @@ float reduction_gpu(float *gpu_array, int size, int blocks, int threads) {
 
 void invoke_kernel_variance(float *gpu_array, float mean, int blocks,
                             int threads) {
-    var_kernel<<<blocks, threads>>> (gpu_array, mean);
+    var_kernel<<<blocks, threads>>>(gpu_array, mean);
 }
 }
 }

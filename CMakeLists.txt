@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.3)
 
 project(mcgpu)
 
+enable_testing()
+
 include(FindCUDA)
 
 set(CMAKE_CXX_COMPILER g++-5.2)
@@ -44,10 +46,23 @@ add_custom_command(
 # Main library
 cuda_add_library(mcgpu SHARED ${CMAKE_CURRENT_BINARY_DIR}/mcgpu.cu ${CMAKE_CURRENT_BINARY_DIR}/device.hpp)
 
-# Main executable
-add_executable(maintest test/maintest/maintest.cpp)
-target_link_libraries(maintest mcgpu)
+# Temp executables
+add_executable(bs_european_call test/blackscholes/european_call.cpp)
+target_link_libraries(bs_european_call mcgpu)
+add_test(bs_european_call bs_european_call)
+
+add_executable(bs_european_put test/blackscholes/european_put.cpp)
+target_link_libraries(bs_european_put mcgpu)
+add_test(bs_european_put bs_european_put)
+
+add_executable(bs_european_bullspread test/blackscholes/european_bullspread.cpp)
+target_link_libraries(bs_european_bullspread mcgpu)
+add_test(bs_european_bullspread bs_european_bullspread)
+
+add_executable(bs_european_binary test/blackscholes/european_binary.cpp)
+target_link_libraries(bs_european_binary mcgpu)
+add_test(bs_european_binary bs_european_binary)
 
 # Benchmarks
-add_executable(basic ${CMAKE_CURRENT_SOURCE_DIR}/test/benchmark/basic.cpp)
-target_link_libraries(basic mcgpu benchmark)
+add_executable(bs_basic_benchmark ${CMAKE_CURRENT_SOURCE_DIR}/test/benchmark/blackscholes_basic_benchmark.cpp)
+target_link_libraries(bs_basic_benchmark mcgpu benchmark)

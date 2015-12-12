@@ -1,7 +1,7 @@
 /*
  * Copyright 2012 Aleksander Gajewski <adiog@brainfuck.pl>
  *   created:  Tue 27 Mar 2012 02:36:28 PM CET
- *   modified: Fri 11 Dec 2015 06:56:51 AM CET
+ *   modified: Sat 12 Dec 2015 06:51:54 PM CET
  */
 
 #include <vector>
@@ -17,7 +17,8 @@
 namespace mcgpu {
 namespace simulation {
 
-Simulation::Simulation(int paths_, int points_) : paths(paths_), points(points_) {
+Simulation::Simulation(int paths_, int points_)
+    : paths(paths_), points(points_) {
     threads = CUDA_maxThreadsPerBlock;
     blocks = (paths + CUDA_maxThreadsPerBlock - 1) / CUDA_maxThreadsPerBlock;
     paths = blocks * threads;

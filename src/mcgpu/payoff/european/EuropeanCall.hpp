@@ -1,13 +1,18 @@
 /*
  * Copyright 2012 Aleksander Gajewski <adiog@brainfuck.pl>
  *   created:  Sat 24 Mar 2012 08:45:31 PM CET
- *   modified: Fri 11 Dec 2015 05:42:10 PM CET
+ *   modified: Sat 12 Dec 2015 09:16:27 PM CET
  */
 
 #ifndef MCGPU_PAYOFF_EUROPEAN_EUROPEANCALL_HPP
 #define MCGPU_PAYOFF_EUROPEAN_EUROPEANCALL_HPP
 
 #include "mcgpu/payoff/european/European.hpp"
+
+struct EuropeanCallApplyArgs {
+    /// strike price
+    float K;
+};
 
 namespace mcgpu {
 namespace payoff {
@@ -19,11 +24,15 @@ namespace european {
 class EuropeanCall : public mcgpu::payoff::european::European {
   public:
     EuropeanCall(float K = 50.0F);
+    EuropeanCall(const EuropeanCall &europeanCall) = delete;
+    EuropeanCall(EuropeanCall &&europeanCall) = delete;
+    EuropeanCall &operator=(const EuropeanCall &europeanCall) = delete;
+    EuropeanCall &operator=(EuropeanCall &&europeanCall) = delete;
+
     virtual ~EuropeanCall();
 
   private:
-    /// strike price
-    float K;
+    EuropeanCallApplyArgs applyArgs;
 };
 }
 }
