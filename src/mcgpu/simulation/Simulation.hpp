@@ -8,10 +8,18 @@
 #define MCGPU_SIMULATION_SIMULATION_HPP
 
 #include <cstdint>
+#include <utility>
 #include "mcgpu/payoff/Payoff.hpp"
 
 namespace mcgpu {
 namespace simulation {
+
+class Result : public std::pair<float, float> {
+public:
+    Result(float mean, float var) : std::pair<float, float>(mean, var) {};
+    float getMean() {return first;}
+    float getVariance() {return second;}
+};
 
 enum class NumericalScheme : uint8_t { EulerMaruyama, Milstein };
 
@@ -30,7 +38,7 @@ class Simulation {
     int get_threads() const { return threads; }
     int get_points() const { return points; }
 
-    std::pair<float, float> finish();
+    Result finish();
 
   private:
     void init_seeds(unsigned int *mem, int n);

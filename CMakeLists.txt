@@ -4,7 +4,7 @@ project(mcgpu)
 
 include(FindCUDA)
 
-set(CMAKE_CXX_COMPILER g++)
+set(CMAKE_CXX_COMPILER g++-5.2)
 set(CMAKE_CXX_FLAGS "-std=c++11")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -45,5 +45,9 @@ add_custom_command(
 cuda_add_library(mcgpu SHARED ${CMAKE_CURRENT_BINARY_DIR}/mcgpu.cu ${CMAKE_CURRENT_BINARY_DIR}/device.hpp)
 
 # Main executable
-add_executable(maintest ${CMAKE_CURRENT_SOURCE_DIR}/src/maintest/maintest.cpp)
+add_executable(maintest test/maintest/maintest.cpp)
 target_link_libraries(maintest mcgpu)
+
+# Benchmarks
+add_executable(basic ${CMAKE_CURRENT_SOURCE_DIR}/test/benchmark/basic.cpp)
+target_link_libraries(basic mcgpu benchmark)

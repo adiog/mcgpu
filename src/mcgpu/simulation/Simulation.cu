@@ -17,7 +17,7 @@
 namespace mcgpu {
 namespace simulation {
 
-Simulation::Simulation(int paths_, int points) : paths(paths_), points(points) {
+Simulation::Simulation(int paths_, int points_) : paths(paths_), points(points_) {
     threads = CUDA_maxThreadsPerBlock;
     blocks = (paths + CUDA_maxThreadsPerBlock - 1) / CUDA_maxThreadsPerBlock;
     paths = blocks * threads;
@@ -46,7 +46,7 @@ void Simulation::init_seeds(unsigned int *mem, int n) {
     }
 }
 
-std::pair<float, float> Simulation::finish() {
+Result Simulation::finish() {
     float mean =
         mcgpu::helpers::reduction_gpu(gpu_array, paths, blocks, threads);
 

@@ -5,10 +5,8 @@
  */
 
 #include <iostream>
-#include <cstdlib>
 #include <cmath>
 #include <memory>
-#include <sys/time.h>
 
 #include "mcgpu/host/Timer.hpp"
 #include "mcgpu/host/Random.hpp"
@@ -17,14 +15,7 @@
 #include "mcgpu/model/MarketModel.hpp"
 #include "mcgpu/model/BlackScholes.hpp"
 #include "mcgpu/payoff/european/EuropeanCall.hpp"
-#include "mcgpu/simulation/Simulation.hpp"
 
-#include <cuda_runtime_api.h>
-
-#include <cuda.h>
-#include <curand.h>
-#include <curand_kernel.h>
-#include <mcgpu/helpers/cuda_call.hpp>
 #include <thread>
 
 int main(int argc, char **argv) {
@@ -38,12 +29,12 @@ int main(int argc, char **argv) {
 
     mm->runEulerSimulation(payoff.get(), simulation.get());
 
-    std::pair<float, float> result = simulation->finish();
+    mcgpu::simulation::Result result = simulation->finish();
 
     float expectedResult =
         mcgpu::host::european_call_price(50.0F, 0.05F, 0.3F, 1.0F, 50.0F);
 
-    std::cout << expectedResult << " " << result.first << " " << result.second << std::endl;
+    std::cout << expectedResult << " " << result.getMean() << " " << result.getVariance() << std::endl;
 
     return 0;
 }

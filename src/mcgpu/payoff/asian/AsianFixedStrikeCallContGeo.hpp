@@ -15,7 +15,7 @@ namespace asian {
 
 class AsianFixedStrikeCallContGeo : public Asian {
   public:
-    AsianFixedStrikeCallContGeo(float K);
+    AsianFixedStrikeCallContGeo(float K = 50.0F);
     virtual ~AsianFixedStrikeCallContGeo();
 
   private:
