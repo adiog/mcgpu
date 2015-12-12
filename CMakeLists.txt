@@ -4,6 +4,7 @@ project(mcgpu)
 
 include(FindCUDA)
 
+set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_CXX_FLAGS "-std=c++11")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -28,7 +29,7 @@ file(GLOB SOURCE_PAYOFF_ASIAN ${CMAKE_CURRENT_SOURCE_DIR}/src/mcgpu/payoff/asian
 file(GLOB SOURCE_PAYOFF_EUROPEAN ${CMAKE_CURRENT_SOURCE_DIR}/src/mcgpu/payoff/european/*.cu)
 
 # Define all source files
-set(MCGPU_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/maintest/maintest.cu ${SOURCE_HOST} ${SOURCE_HELPERS} ${SOURCE_SIMULATION} ${SOURCE_MARKET} ${SOURCE_PAYOFF_ASIAN} ${SOURCE_PAYOFF_EUROPEAN})
+set(MCGPU_SOURCE ${SOURCE_HOST} ${SOURCE_HELPERS} ${SOURCE_SIMULATION} ${SOURCE_MARKET} ${SOURCE_PAYOFF_ASIAN} ${SOURCE_PAYOFF_EUROPEAN})
 
 # Concatenate all source files (ugly workaround needed to use pointer to function on device)
 add_custom_command(
@@ -40,6 +41,9 @@ add_custom_command(
             ${MCGPU_SOURCE}
 )
 
-# Main executable
-cuda_add_executable(mcgpu ${CMAKE_CURRENT_BINARY_DIR}/mcgpu.cu ${CMAKE_CURRENT_BINARY_DIR}/device.hpp)
+# Main library
+cuda_add_library(mcgpu SHARED ${CMAKE_CURRENT_BINARY_DIR}/mcgpu.cu ${CMAKE_CURRENT_BINARY_DIR}/device.hpp)
 
+# Main executable
+add_executable(maintest ${CMAKE_CURRENT_SOURCE_DIR}/src/maintest/maintest.cpp)
+target_link_libraries(maintest mcgpu)

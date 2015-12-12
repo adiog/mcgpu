@@ -28,17 +28,6 @@
 #include <thread>
 
 int main(int argc, char **argv) {
-    int deviceCount;
-    int device = 0;
-
-    cudaGetDeviceCount(&deviceCount);
-    if (deviceCount == 0) {
-        std::cerr << "No CUDA device found." << std::endl;
-        return 1;
-    }
-
-    CUDA_CALL(cudaSetDevice(device));
-
     std::unique_ptr<mcgpu::model::MarketModel> mm(
         new mcgpu::model::BlackScholes());
     std::unique_ptr<mcgpu::payoff::european::European> payoff(

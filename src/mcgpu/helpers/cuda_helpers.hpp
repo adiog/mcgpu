@@ -13,6 +13,21 @@ namespace helpers {
 void invoke_kernel_variance(float *gpu_array, float mean, int blocks,
                             int threads);
 float reduction_gpu(float *gpu_array, int size, int blocks, int threads);
+
+class DeviceHandler {
+    DeviceHandler() {
+        int deviceCount;
+        int device = 0;
+
+        cudaGetDeviceCount(&deviceCount);
+        if (deviceCount == 0) {
+            std::cerr << "No CUDA device found." << std::endl;
+            throw(std::exception());
+        }
+
+        CUDA_CALL(cudaSetDevice(device));
+    }
+};
 }
 }
 

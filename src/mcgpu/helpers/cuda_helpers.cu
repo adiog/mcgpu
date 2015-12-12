@@ -10,6 +10,7 @@
 #include "mcgpu/helpers/cuda_call.hpp"
 #include "device.hpp"
 
+
 __global__ void var_kernel(float *gpu_array, float mean) {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
     gpu_array[i] = (gpu_array[i] - mean) * (gpu_array[i] - mean);

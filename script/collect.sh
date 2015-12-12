@@ -5,7 +5,7 @@
 
 RESULT=$1
 shift 1
-rm ${RESULT}
+rm -f ${RESULT}
 
 for file in $*; do
     cat $file >> ${RESULT}
