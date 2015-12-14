@@ -5,11 +5,11 @@
  */
 
 #include <cmath>
-#include "mcgpu/payoff/asian/AsianFixedStrikeCallContGeo.hpp"
+#include "mcgpu/payoff/asian/AsianCall.hpp"
 #include "mcgpu/helpers/cuda_call.hpp"
 
 __device__ float asian_call_apply(float stock, float acc, float T, void *data) {
-    float K = ((float *)data)[0];
+    float K = ((AsianCallApplyArgs *)data)->K;
     float contgeoavg = exp((1.0 / T) * acc);
     return ((contgeoavg > K) ? (contgeoavg - K) : 0.0);
 };
@@ -31,7 +31,7 @@ namespace mcgpu {
 namespace payoff {
 namespace asian {
 
-AsianFixedStrikeCallContGeo::AsianFixedStrikeCallContGeo(float K_) : K(K_) {
+AsianCall::AsianCall(float K) : applyArgs{K} {
     gpu_asian_apply *function_to_pointer_on_device_ptr;
     CUDA_CALL(cudaMalloc((void **)&function_to_pointer_on_device_ptr,
                          sizeof(gpu_asian_apply)));
@@ -48,20 +48,15 @@ AsianFixedStrikeCallContGeo::AsianFixedStrikeCallContGeo(float K_) : K(K_) {
                          sizeof(gpu_asian_fold), cudaMemcpyDeviceToHost));
     CUDA_CALL(cudaFree(function_to_pointer_fold_on_device_ptr));
 
-    CUDA_CALL(cudaMalloc((void **)&gpu_apply_args, 1 * sizeof(float)));
+    CUDA_CALL(cudaMalloc((void **)&gpu_apply_args, sizeof(AsianCallApplyArgs)));
     init_acc = 0;
 
     gpu_fold_args = (void *)0;
-
-    float cpu_apply_args[1];
-    cpu_apply_args[0] = K;
-    CUDA_CALL(cudaMemcpy(gpu_apply_args, cpu_apply_args, 1 * sizeof(float),
+    CUDA_CALL(cudaMemcpy(gpu_apply_args, &applyArgs, sizeof(AsianCallApplyArgs),
                          cudaMemcpyHostToDevice));
 }
 
-AsianFixedStrikeCallContGeo::~AsianFixedStrikeCallContGeo() {
-    CUDA_CALL(cudaFree(gpu_apply_args));
-}
+AsianCall::~AsianCall() { CUDA_CALL(cudaFree(gpu_apply_args)); }
 }
 }
 }

@@ -11,20 +11,42 @@
 #include "mcgpu/model/BlackScholes.hpp"
 #include "mcgpu/payoff/european/EuropeanBinary.hpp"
 
-int main(int argc, char **argv) {
+
+#include <gtest/gtest.h>
+
+TEST(BlackScholesTest, EuropeanBinaryEulerTest) {
     std::unique_ptr<mcgpu::model::MarketModel> mm(
-        new mcgpu::model::BlackScholes());
+            new mcgpu::model::BlackScholes());
     std::unique_ptr<mcgpu::payoff::european::European> payoff(
-        new mcgpu::payoff::european::EuropeanBinary());
+            new mcgpu::payoff::european::EuropeanBinary());
 
     std::unique_ptr<mcgpu::simulation::Simulation> simulation(
-        new mcgpu::simulation::Simulation());
+            new mcgpu::simulation::Simulation());
 
     mm->runEulerSimulation(payoff.get(), simulation.get());
 
     mcgpu::simulation::Result result = simulation->finish();
 
     std::cout << result.getMean() << " " << result.getVariance() << std::endl;
+}
 
-    return 0;
+TEST(BlackScholesTest, EuropeanBinarMilsteinTest) {
+    std::unique_ptr<mcgpu::model::MarketModel> mm(
+            new mcgpu::model::BlackScholes());
+    std::unique_ptr<mcgpu::payoff::european::European> payoff(
+            new mcgpu::payoff::european::EuropeanBinary());
+
+    std::unique_ptr<mcgpu::simulation::Simulation> simulation(
+            new mcgpu::simulation::Simulation());
+
+    mm->runMilsteinSimulation(payoff.get(), simulation.get());
+
+    mcgpu::simulation::Result result = simulation->finish();
+
+    std::cout << result.getMean() << " " << result.getVariance() << std::endl;
+}
+
+int main(int argc, char *argv[]) {
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

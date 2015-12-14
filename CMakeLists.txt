@@ -47,22 +47,35 @@ add_custom_command(
 cuda_add_library(mcgpu SHARED ${CMAKE_CURRENT_BINARY_DIR}/mcgpu.cu ${CMAKE_CURRENT_BINARY_DIR}/device.hpp)
 
 # Temp executables
+add_executable(bs_asian_call test/blackscholes/asian_call.cpp)
+target_link_libraries(bs_asian_call mcgpu gtest)
+add_test(bs_asian_call bs_asian_call)
+
+add_executable(bs_asian_barrier test/blackscholes/asian_barrier.cpp)
+target_link_libraries(bs_asian_barrier mcgpu gtest)
+add_test(bs_asian_barrier bs_asian_barrier)
+
+add_executable(bs_asian_paris test/blackscholes/asian_paris.cpp)
+target_link_libraries(bs_asian_paris mcgpu gtest)
+add_test(bs_asian_paris bs_asian_paris)
+
 add_executable(bs_european_call test/blackscholes/european_call.cpp)
-target_link_libraries(bs_european_call mcgpu)
+target_link_libraries(bs_european_call mcgpu gtest)
 add_test(bs_european_call bs_european_call)
 
 add_executable(bs_european_put test/blackscholes/european_put.cpp)
-target_link_libraries(bs_european_put mcgpu)
+target_link_libraries(bs_european_put mcgpu gtest)
 add_test(bs_european_put bs_european_put)
 
 add_executable(bs_european_bullspread test/blackscholes/european_bullspread.cpp)
-target_link_libraries(bs_european_bullspread mcgpu)
+target_link_libraries(bs_european_bullspread mcgpu gtest)
 add_test(bs_european_bullspread bs_european_bullspread)
 
 add_executable(bs_european_binary test/blackscholes/european_binary.cpp)
-target_link_libraries(bs_european_binary mcgpu)
+target_link_libraries(bs_european_binary mcgpu gtest)
 add_test(bs_european_binary bs_european_binary)
 
 # Benchmarks
 add_executable(bs_basic_benchmark ${CMAKE_CURRENT_SOURCE_DIR}/test/benchmark/blackscholes_basic_benchmark.cpp)
 target_link_libraries(bs_basic_benchmark mcgpu benchmark)
+add_test(bs_basic_benchmark bs_basic_benchmark)

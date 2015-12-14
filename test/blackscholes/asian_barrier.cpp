@@ -9,15 +9,16 @@
 
 #include "mcgpu/model/MarketModel.hpp"
 #include "mcgpu/model/BlackScholes.hpp"
-#include "mcgpu/payoff/european/EuropeanBullSpread.hpp"
+#include "mcgpu/payoff/asian/BarrierUpAndOutCall.hpp"
+
 
 #include <gtest/gtest.h>
 
-TEST(BlackScholesTest, EuropeanBullSpreadEulerTest) {
+TEST(BlackScholesTest, AsianBarrierEulerTest) {
     std::unique_ptr<mcgpu::model::MarketModel> mm(
             new mcgpu::model::BlackScholes());
-    std::unique_ptr<mcgpu::payoff::european::European> payoff(
-            new mcgpu::payoff::european::EuropeanBullSpread());
+    std::unique_ptr<mcgpu::payoff::asian::Asian> payoff(
+            new mcgpu::payoff::asian::BarrierUpAndOutCall());
 
     std::unique_ptr<mcgpu::simulation::Simulation> simulation(
             new mcgpu::simulation::Simulation());
@@ -29,11 +30,11 @@ TEST(BlackScholesTest, EuropeanBullSpreadEulerTest) {
     std::cout << result.getMean() << " " << result.getVariance() << std::endl;
 }
 
-TEST(BlackScholesTest, EuropeanBullSpreadMilsteinTest) {
+TEST(BlackScholesTest, AsianBarrierMilsteinTest) {
     std::unique_ptr<mcgpu::model::MarketModel> mm(
             new mcgpu::model::BlackScholes());
-    std::unique_ptr<mcgpu::payoff::european::European> payoff(
-            new mcgpu::payoff::european::EuropeanBullSpread());
+    std::unique_ptr<mcgpu::payoff::asian::Asian> payoff(
+            new mcgpu::payoff::asian::BarrierUpAndOutCall());
 
     std::unique_ptr<mcgpu::simulation::Simulation> simulation(
             new mcgpu::simulation::Simulation());

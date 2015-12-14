@@ -5,7 +5,6 @@
  */
 
 #include <iostream>
-#include <cmath>
 #include <memory>
 
 #include "mcgpu/host/Timer.hpp"
@@ -16,9 +15,9 @@
 #include "mcgpu/model/BlackScholes.hpp"
 #include "mcgpu/payoff/european/EuropeanCall.hpp"
 
-#include <thread>
+#include <gtest/gtest.h>
 
-int main(int argc, char **argv) {
+TEST(BlackScholesTest, EuropeanCallEulerTest) {
     std::unique_ptr<mcgpu::model::MarketModel> mm(
         new mcgpu::model::BlackScholes());
     std::unique_ptr<mcgpu::payoff::european::European> payoff(
@@ -35,6 +34,29 @@ int main(int argc, char **argv) {
         mcgpu::host::european_call_price(50.0F, 0.05F, 0.3F, 1.0F, 50.0F);
 
     std::cout << expectedResult << " " << result.getMean() << " " << result.getVariance() << std::endl;
-
-    return 0;
 }
+
+TEST(BlackScholesTest, EuropeanCallMilsteinTest) {
+    std::unique_ptr<mcgpu::model::MarketModel> mm(
+            new mcgpu::model::BlackScholes());
+    std::unique_ptr<mcgpu::payoff::european::European> payoff(
+            new mcgpu::payoff::european::EuropeanCall());
+
+    std::unique_ptr<mcgpu::simulation::Simulation> simulation(
+            new mcgpu::simulation::Simulation());
+
+    mm->runMilsteinSimulation(payoff.get(), simulation.get());
+
+    mcgpu::simulation::Result result = simulation->finish();
+
+    float expectedResult =
+            mcgpu::host::european_call_price(50.0F, 0.05F, 0.3F, 1.0F, 50.0F);
+
+    std::cout << expectedResult << " " << result.getMean() << " " << result.getVariance() << std::endl;
+}
+
+int main(int argc, char *argv[]) {
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
+

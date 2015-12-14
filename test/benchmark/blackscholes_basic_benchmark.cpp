@@ -10,7 +10,9 @@
 #include "mcgpu/payoff/european/EuropeanBullSpread.hpp"
 #include "mcgpu/payoff/european/EuropeanCall.hpp"
 #include "mcgpu/payoff/european/EuropeanPut.hpp"
-#include "mcgpu/payoff/asian/AsianFixedStrikeCallContGeo.hpp"
+#include "mcgpu/payoff/asian/AsianCall.hpp"
+#include "mcgpu/payoff/asian/BarrierUpAndOutCall.hpp"
+#include "mcgpu/payoff/asian/ParisBarrierUpAndOutCall.hpp"
 
 #include <memory>
 #include <benchmark/benchmark_api.h>
@@ -164,7 +166,7 @@ void BM_BlackScholes_AsianCall_Euler(benchmark::State& state) {
         std::unique_ptr<mcgpu::model::MarketModel> mm(
                 new mcgpu::model::BlackScholes());
         std::unique_ptr<mcgpu::payoff::asian::Asian> payoff(
-                new mcgpu::payoff::asian::AsianFixedStrikeCallContGeo());
+                new mcgpu::payoff::asian::AsianCall());
 
         std::unique_ptr<mcgpu::simulation::Simulation> simulation(
                 new mcgpu::simulation::Simulation(state.range_x(),
@@ -181,7 +183,75 @@ void BM_BlackScholes_AsianCall_Milstein(benchmark::State& state) {
         std::unique_ptr<mcgpu::model::MarketModel> mm(
                 new mcgpu::model::BlackScholes());
         std::unique_ptr<mcgpu::payoff::asian::Asian> payoff(
-                new mcgpu::payoff::asian::AsianFixedStrikeCallContGeo());
+                new mcgpu::payoff::asian::AsianCall());
+
+        std::unique_ptr<mcgpu::simulation::Simulation> simulation(
+                new mcgpu::simulation::Simulation(state.range_x(),
+                                                  state.range_y()));
+
+        mm->runMilsteinSimulation(payoff.get(), simulation.get());
+
+        mcgpu::simulation::Result result = simulation->finish();
+    }
+}
+
+void BM_BlackScholes_AsianBarrier_Euler(benchmark::State& state) {
+    while (state.KeepRunning()) {
+        std::unique_ptr<mcgpu::model::MarketModel> mm(
+                new mcgpu::model::BlackScholes());
+        std::unique_ptr<mcgpu::payoff::asian::Asian> payoff(
+                new mcgpu::payoff::asian::BarrierUpAndOutCall());
+
+        std::unique_ptr<mcgpu::simulation::Simulation> simulation(
+                new mcgpu::simulation::Simulation(state.range_x(),
+                                                  state.range_y()));
+
+        mm->runEulerSimulation(payoff.get(), simulation.get());
+
+        mcgpu::simulation::Result result = simulation->finish();
+    }
+}
+
+void BM_BlackScholes_AsianBarrier_Milstein(benchmark::State& state) {
+    while (state.KeepRunning()) {
+        std::unique_ptr<mcgpu::model::MarketModel> mm(
+                new mcgpu::model::BlackScholes());
+        std::unique_ptr<mcgpu::payoff::asian::Asian> payoff(
+                new mcgpu::payoff::asian::BarrierUpAndOutCall());
+
+        std::unique_ptr<mcgpu::simulation::Simulation> simulation(
+                new mcgpu::simulation::Simulation(state.range_x(),
+                                                  state.range_y()));
+
+        mm->runMilsteinSimulation(payoff.get(), simulation.get());
+
+        mcgpu::simulation::Result result = simulation->finish();
+    }
+}
+
+void BM_BlackScholes_AsianParis_Euler(benchmark::State& state) {
+    while (state.KeepRunning()) {
+        std::unique_ptr<mcgpu::model::MarketModel> mm(
+                new mcgpu::model::BlackScholes());
+        std::unique_ptr<mcgpu::payoff::asian::Asian> payoff(
+                new mcgpu::payoff::asian::ParisBarrierUpAndOutCall());
+
+        std::unique_ptr<mcgpu::simulation::Simulation> simulation(
+                new mcgpu::simulation::Simulation(state.range_x(),
+                                                  state.range_y()));
+
+        mm->runEulerSimulation(payoff.get(), simulation.get());
+
+        mcgpu::simulation::Result result = simulation->finish();
+    }
+}
+
+void BM_BlackScholes_AsianParis_Milstein(benchmark::State& state) {
+    while (state.KeepRunning()) {
+        std::unique_ptr<mcgpu::model::MarketModel> mm(
+                new mcgpu::model::BlackScholes());
+        std::unique_ptr<mcgpu::payoff::asian::Asian> payoff(
+                new mcgpu::payoff::asian::ParisBarrierUpAndOutCall());
 
         std::unique_ptr<mcgpu::simulation::Simulation> simulation(
                 new mcgpu::simulation::Simulation(state.range_x(),
@@ -204,5 +274,9 @@ SIMULATION_BENCHMARK(BM_BlackScholes_EuropeanBullSpread_Milstein);
 
 SIMULATION_BENCHMARK(BM_BlackScholes_AsianCall_Euler);
 SIMULATION_BENCHMARK(BM_BlackScholes_AsianCall_Milstein);
+SIMULATION_BENCHMARK(BM_BlackScholes_AsianBarrier_Euler);
+SIMULATION_BENCHMARK(BM_BlackScholes_AsianBarrier_Milstein);
+SIMULATION_BENCHMARK(BM_BlackScholes_AsianParis_Euler);
+SIMULATION_BENCHMARK(BM_BlackScholes_AsianParis_Milstein);
 
 BENCHMARK_MAIN()
