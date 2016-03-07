@@ -4,13 +4,13 @@
  *   modified: Mon Apr  2 20:40:10 2012
  */
 
-#include "mcgpu/payoff/asian/BarrierUpAndOutCall.hpp"
 #include "mcgpu/helpers/cuda_call.hpp"
+#include "mcgpu/payoff/asian/BarrierUpAndOutCall.hpp"
 
 __device__ float asian_barrier_apply(float stock, float acc, float T,
                                      void *data) {
     float K = ((float *)data)[0];
-    return (((acc == 1) && (stock > K)) ? (stock - K) : 0.0);
+    return (((acc == 1.0F) && (stock > K)) ? (stock - K) : 0.0F);
 };
 
 __global__ void get_asian_barrier_apply(gpu_asian_apply *apply_ptr) {
@@ -20,7 +20,7 @@ __global__ void get_asian_barrier_apply(gpu_asian_apply *apply_ptr) {
 __device__ float asian_barrier_fold(float stock, float acc, float t, float dT,
                                     void *data) {
     float B = ((float *)data)[0];
-    return ((acc == 1) && (stock < B));
+    return ((acc == 1.0F) && (stock < B)) ? 1.0F : 0.0F;
 };
 
 __global__ void get_asian_barrier_fold(gpu_asian_fold *fold_ptr) {
@@ -53,12 +53,12 @@ BarrierUpAndOutCall::BarrierUpAndOutCall(float K, float B)
                          sizeof(BarrierUpAndOutCallApplyArgs)));
     CUDA_CALL(cudaMalloc((void **)&gpu_fold_args,
                          sizeof(BarrierUpAndOutCallFoldArgs)));
-    init_acc = 1;
+    init_acc = 1.0F;
 
     CUDA_CALL(cudaMemcpy(gpu_apply_args, &applyArgs,
                          sizeof(BarrierUpAndOutCallApplyArgs),
                          cudaMemcpyHostToDevice));
-    CUDA_CALL(cudaMemcpy(gpu_apply_args, &foldArgs,
+    CUDA_CALL(cudaMemcpy(gpu_fold_args, &foldArgs,
                          sizeof(BarrierUpAndOutCallFoldArgs),
                          cudaMemcpyHostToDevice));
 }
