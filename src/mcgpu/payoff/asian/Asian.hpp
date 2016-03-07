@@ -9,8 +9,8 @@
 
 #include "mcgpu/payoff/Payoff.hpp"
 
-typedef float (*gpu_asian_apply)(float, float, float, void*);
-typedef float (*gpu_asian_fold)(float, float, float, float, void*);
+using gpu_asian_apply = float (*)(float, float, float, void*);
+using gpu_asian_fold = float (*)(float, float, float, float, void*);
 
 namespace mcgpu {
 namespace payoff {

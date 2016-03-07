@@ -4,11 +4,10 @@
  *   modified: Mon Apr  2 05:24:43 2012
  */
 
-#include <cmath>
 #include "mcgpu/helpers/cuda_call.hpp"
 #include "mcgpu/model/BlackScholes.hpp"
-#include "mcgpu/payoff/european/European.hpp"
 #include "mcgpu/payoff/asian/Asian.hpp"
+#include "mcgpu/payoff/european/European.hpp"
 #include "mcgpu/simulation/Simulation.hpp"
 
 __global__ void kernel_blackscholes_eulermaruyama_european(
@@ -49,7 +48,7 @@ __global__ void kernel_blackscholes_eulermaruyama_asian(
         // perform step of Euler-Maruyama numerical scheme
         S += r * S * dt + sigma * S * sqrt(dt) * curand_normal(&state);
         // apply fold function
-        acc = (*fold)(S, acc, dt *t, dt, fold_args);
+        acc = (*fold)(S, acc, dt * t, dt, fold_args);
     }
 
     // store prices in global memory
@@ -101,7 +100,7 @@ __global__ void kernel_blackscholes_milstein_asian(
         S += r * S * dt + sigma * S * dW +
              (0.5F * (sigma * sigma) * S * ((dW * dW) - dt));
         // apply fold function
-        acc = (*fold)(S, acc, dt *t, dt, fold_args);
+        acc = (*fold)(S, acc, dt * t, dt, fold_args);
     }
 
     // store prices in global memory
@@ -114,43 +113,43 @@ namespace model {
 void BlackScholes::runEulerSimulation(
     const mcgpu::payoff::european::European *payoff,
     const mcgpu::simulation::Simulation *simulation) const {
-    kernel_blackscholes_eulermaruyama_european
-<<<simulation->get_blocks(), simulation->get_threads()>>>
-        (S0, r, sigma, T, simulation->get_points(), simulation->get_gpu_array(),
-         simulation->get_gpu_seeds(), payoff->get_apply(),
-         payoff->get_apply_args());
+    kernel_blackscholes_eulermaruyama_european<<<simulation->get_blocks(),
+                                                 simulation->get_threads()>>>(
+        S0, r, sigma, T, simulation->get_points(), simulation->get_gpu_array(),
+        simulation->get_gpu_seeds(), payoff->get_apply(),
+        payoff->get_apply_args());
 }
 
 void BlackScholes::runEulerSimulation(
     const mcgpu::payoff::asian::Asian *payoff,
     const mcgpu::simulation::Simulation *simulation) const {
-    kernel_blackscholes_eulermaruyama_asian
-<<<simulation->get_blocks(), simulation->get_threads()>>>
-        (S0, r, sigma, T, simulation->get_points(), simulation->get_gpu_array(),
-         simulation->get_gpu_seeds(), payoff->get_apply(),
-         payoff->get_apply_args(), payoff->get_fold(), payoff->get_fold_args(),
-         payoff->get_init_acc());
+    kernel_blackscholes_eulermaruyama_asian<<<simulation->get_blocks(),
+                                              simulation->get_threads()>>>(
+        S0, r, sigma, T, simulation->get_points(), simulation->get_gpu_array(),
+        simulation->get_gpu_seeds(), payoff->get_apply(),
+        payoff->get_apply_args(), payoff->get_fold(), payoff->get_fold_args(),
+        payoff->get_init_acc());
 }
 
 void BlackScholes::runMilsteinSimulation(
     const mcgpu::payoff::european::European *payoff,
     const mcgpu::simulation::Simulation *simulation) const {
-    kernel_blackscholes_milstein_european
-<<<simulation->get_blocks(), simulation->get_threads()>>>
-        (S0, r, sigma, T, simulation->get_points(), simulation->get_gpu_array(),
-         simulation->get_gpu_seeds(), payoff->get_apply(),
-         payoff->get_apply_args());
+    kernel_blackscholes_milstein_european<<<simulation->get_blocks(),
+                                            simulation->get_threads()>>>(
+        S0, r, sigma, T, simulation->get_points(), simulation->get_gpu_array(),
+        simulation->get_gpu_seeds(), payoff->get_apply(),
+        payoff->get_apply_args());
 }
 
 void BlackScholes::runMilsteinSimulation(
     const mcgpu::payoff::asian::Asian *payoff,
     const mcgpu::simulation::Simulation *simulation) const {
-    kernel_blackscholes_milstein_asian
-<<<simulation->get_blocks(), simulation->get_threads()>>>
-        (S0, r, sigma, T, simulation->get_points(), simulation->get_gpu_array(),
-         simulation->get_gpu_seeds(), payoff->get_apply(),
-         payoff->get_apply_args(), payoff->get_fold(), payoff->get_fold_args(),
-         payoff->get_init_acc());
+    kernel_blackscholes_milstein_asian<<<simulation->get_blocks(),
+                                         simulation->get_threads()>>>(
+        S0, r, sigma, T, simulation->get_points(), simulation->get_gpu_array(),
+        simulation->get_gpu_seeds(), payoff->get_apply(),
+        payoff->get_apply_args(), payoff->get_fold(), payoff->get_fold_args(),
+        payoff->get_init_acc());
 }
 }
 }

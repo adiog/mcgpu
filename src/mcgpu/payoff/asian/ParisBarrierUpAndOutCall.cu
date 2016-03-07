@@ -10,7 +10,7 @@
 __device__ float asian_paris_apply(float stock, float acc, float T,
                                    void *data) {
     float K = ((float *)data)[0];
-    return (((acc == 1) && (stock > K)) ? (stock - K) : 0.0);
+    return (((acc == 1.0F) && (stock > K)) ? (stock - K) : 0.0F);
 };
 
 __global__ void get_asian_paris_apply(gpu_asian_apply *apply_ptr) {
@@ -21,7 +21,7 @@ __device__ float asian_paris_fold(float stock, float acc, float t, float dT,
                                   void *data) {
     float B = ((float *)data)[0];
     float timein = ((float *)data)[1];
-    return ((acc == 1) && ((t < timein) || (stock < B)));
+    return ((acc == 1.0F) && ((t < timein) || (stock < B)));
 };
 
 __global__ void get_asian_paris_fold(gpu_asian_fold *fold_ptr) {
@@ -55,7 +55,7 @@ ParisBarrierUpAndOutCall::ParisBarrierUpAndOutCall(float K, float B,
     CUDA_CALL(cudaMalloc((void **)&gpu_fold_args,
                          sizeof(ParisBarrierUpAndOutCallFoldArgs)));
 
-    init_acc = 1;
+    init_acc = 1.0F;
 
     CUDA_CALL(cudaMemcpy(gpu_apply_args, &applyArgs,
                          sizeof(ParisBarrierUpAndOutCallApplyArgs),

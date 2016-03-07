@@ -4,8 +4,8 @@
  *   modified: Sat 12 Dec 2015 09:16:35 PM CET
  */
 
-#include "mcgpu/payoff/european/EuropeanPut.hpp"
 #include "mcgpu/helpers/cuda_call.hpp"
+#include "mcgpu/payoff/european/EuropeanPut.hpp"
 
 __device__ float european_put_apply(float stock, float T, void *data) {
     float K = ((EuropeanPutApplyArgs *)data)->K;

@@ -5,8 +5,8 @@
  */
 
 #include <vector>
-#include "mcgpu/helpers/cuda_call.hpp"
 #include "device.hpp"
+#include "mcgpu/helpers/cuda_call.hpp"
 
 __global__ void var_kernel(float *gpu_array, float mean) {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
@@ -61,8 +61,8 @@ float reduction_gpu(float *gpu_array, int size, int blocks, int threads) {
 
     CUDA_CALL(cudaMalloc((void **)&gpu_output, blocks * sizeof(float)));
 
-    reduction_kernel<<<blocks, threads, threads * sizeof(float)>>>
-        (gpu_array, gpu_output, size);
+    reduction_kernel<<<blocks, threads, threads * sizeof(float)>>>(
+        gpu_array, gpu_output, size);
 
     CUDA_CALL(cudaMemcpy(cpu_array.data(), gpu_output, blocks * sizeof(float),
                          cudaMemcpyDeviceToHost));

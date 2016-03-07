@@ -4,13 +4,13 @@
  *   modified: Sat 12 Dec 2015 06:51:54 PM CET
  */
 
-#include <vector>
 #include <sys/time.h>
 #include <iostream>
+#include <vector>
 
-#include "mcgpu/simulation/Simulation.hpp"
 #include "mcgpu/helpers/cuda_call.hpp"
 #include "mcgpu/helpers/cuda_helpers.hpp"
+#include "mcgpu/simulation/Simulation.hpp"
 
 #include "device.hpp"
 

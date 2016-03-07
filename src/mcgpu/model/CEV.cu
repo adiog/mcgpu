@@ -7,8 +7,8 @@
 #include <cmath>
 #include "mcgpu/helpers/cuda_call.hpp"
 #include "mcgpu/model/CEV.hpp"
-#include "mcgpu/payoff/european/European.hpp"
 #include "mcgpu/payoff/asian/Asian.hpp"
+#include "mcgpu/payoff/european/European.hpp"
 #include "mcgpu/simulation/Simulation.hpp"
 
 __global__ void kernel_cev_eulermaruyama_european(
@@ -48,7 +48,7 @@ __global__ void kernel_cev_eulermaruyama_asian(
     for (int t = 0; t < points; ++t) {
         S += r * S * dt +
              sigma * __powf(S, alpha) * sqrt(dt) * curand_normal(&state);
-        acc = (*fold)(S, acc, dt *t, dt, fold_args);
+        acc = (*fold)(S, acc, dt * t, dt, fold_args);
     }
 
     // store prices in global memory
@@ -101,7 +101,7 @@ __global__ void kernel_cev_milstein_asian(float S0, float r, float sigma,
         S += r * S * dt + sigma * __powf(S, alpha) * dW +
              (0.5 * (sigma * sigma) * alpha * __powf(S, 2 * alpha - 1) *
               ((dW * dW) - dt));
-        acc = (*fold)(S, acc, dt *t, dt, fold_args);
+        acc = (*fold)(S, acc, dt * t, dt, fold_args);
     }
 
     // store prices in global memory
@@ -114,43 +114,43 @@ namespace model {
 void CEV::runEulerSimulation(
     const mcgpu::payoff::european::European *payoff,
     const mcgpu::simulation::Simulation *simulation) const {
-    kernel_cev_eulermaruyama_european
-<<<simulation->get_blocks(), simulation->get_threads()>>>
-        (S0, r, sigma, alpha, T, simulation->get_points(), simulation->get_gpu_array(),
-         simulation->get_gpu_seeds(), payoff->get_apply(),
-         payoff->get_apply_args());
+    kernel_cev_eulermaruyama_european<<<simulation->get_blocks(),
+                                        simulation->get_threads()>>>(
+        S0, r, sigma, alpha, T, simulation->get_points(),
+        simulation->get_gpu_array(), simulation->get_gpu_seeds(),
+        payoff->get_apply(), payoff->get_apply_args());
 }
 
 void CEV::runEulerSimulation(
     const mcgpu::payoff::asian::Asian *payoff,
     const mcgpu::simulation::Simulation *simulation) const {
-    kernel_cev_eulermaruyama_asian
-<<<simulation->get_blocks(), simulation->get_threads()>>>
-        (S0, r, sigma, alpha, T, simulation->get_points(), simulation->get_gpu_array(),
-         simulation->get_gpu_seeds(), payoff->get_apply(),
-         payoff->get_apply_args(), payoff->get_fold(), payoff->get_fold_args(),
-         payoff->get_init_acc());
+    kernel_cev_eulermaruyama_asian<<<simulation->get_blocks(),
+                                     simulation->get_threads()>>>(
+        S0, r, sigma, alpha, T, simulation->get_points(),
+        simulation->get_gpu_array(), simulation->get_gpu_seeds(),
+        payoff->get_apply(), payoff->get_apply_args(), payoff->get_fold(),
+        payoff->get_fold_args(), payoff->get_init_acc());
 }
 
 void CEV::runMilsteinSimulation(
     const mcgpu::payoff::european::European *payoff,
     const mcgpu::simulation::Simulation *simulation) const {
-    kernel_cev_milstein_european
-<<<simulation->get_blocks(), simulation->get_threads()>>>
-        (S0, r, sigma, alpha, T, simulation->get_points(), simulation->get_gpu_array(),
-         simulation->get_gpu_seeds(), payoff->get_apply(),
-         payoff->get_apply_args());
+    kernel_cev_milstein_european<<<simulation->get_blocks(),
+                                   simulation->get_threads()>>>(
+        S0, r, sigma, alpha, T, simulation->get_points(),
+        simulation->get_gpu_array(), simulation->get_gpu_seeds(),
+        payoff->get_apply(), payoff->get_apply_args());
 }
 
 void CEV::runMilsteinSimulation(
     const mcgpu::payoff::asian::Asian *payoff,
     const mcgpu::simulation::Simulation *simulation) const {
-    kernel_cev_milstein_asian
-<<<simulation->get_blocks(), simulation->get_threads()>>>
-        (S0, r, sigma, alpha, T, simulation->get_points(), simulation->get_gpu_array(),
-         simulation->get_gpu_seeds(), payoff->get_apply(),
-         payoff->get_apply_args(), payoff->get_fold(), payoff->get_fold_args(),
-         payoff->get_init_acc());
+    kernel_cev_milstein_asian<<<simulation->get_blocks(),
+                                simulation->get_threads()>>>(
+        S0, r, sigma, alpha, T, simulation->get_points(),
+        simulation->get_gpu_array(), simulation->get_gpu_seeds(),
+        payoff->get_apply(), payoff->get_apply_args(), payoff->get_fold(),
+        payoff->get_fold_args(), payoff->get_init_acc());
 }
 }
 }

@@ -4,8 +4,8 @@
  *   modified: Sat 12 Dec 2015 09:16:23 PM CET
  */
 
-#include "mcgpu/payoff/european/EuropeanCall.hpp"
 #include "mcgpu/helpers/cuda_call.hpp"
+#include "mcgpu/payoff/european/EuropeanCall.hpp"
 
 __device__ float european_call_apply(float stock, float T, void *data) {
     float K = ((EuropeanCallApplyArgs *)data)->K;

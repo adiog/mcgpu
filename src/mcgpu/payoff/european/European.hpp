@@ -9,7 +9,7 @@
 
 #include "mcgpu/payoff/Payoff.hpp"
 
-typedef float (*gpu_euro_apply)(float, float, void *);
+using gpu_euro_apply = float (*)(float, float, void *);
 
 namespace mcgpu {
 namespace payoff {
